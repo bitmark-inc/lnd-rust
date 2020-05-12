@@ -1,6 +1,9 @@
-use std::path::Path;
-use std::process::Command;
+extern crate file;
+
 use std::io::Result as IOResult;
+use std::path::Path;
+
+use rustc_serialize::hex::ToHex;
 
 use bytes::Bytes;
 use grpc::Metadata;
@@ -14,26 +17,10 @@ pub struct MacaroonData {
 impl MacaroonData {
     /// Reads the macaroon data from a file at the path
     pub fn from_file_path<P: AsRef<Path>>(path: P) -> IOResult<Self> {
-        use std::io::{Error, ErrorKind};
-
-        let output = Command::new("xxd")
-            .args(&["-ps", "-u", "-c", "1000"])
-            .arg(path.as_ref())
-            .output()?;
-
-        if !output.status.success() {
-            let error = String::from_utf8_lossy(&output.stderr);
-            Err(Error::new(ErrorKind::InvalidInput, error.as_ref()))
-        } else {
-            let mut data = output.stdout;
-            data.retain(|&z|
-                ((z >= '0' as _) && (z <= '9' as _)) |
-                    ((z >= 'A' as _) && (z <= 'F' as _))
-            );
-            Ok(MacaroonData {
-                raw: data,
-            })
-        }
+        let data = file::get(path)?;
+        Ok(MacaroonData {
+            raw: data.to_hex().as_bytes().to_vec(),
+        })
     }
 
     /// Creates the `grpc::Metadata` instance that contain the provided macaroon
