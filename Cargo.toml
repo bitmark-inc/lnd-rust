@@ -9,14 +9,32 @@ repository = "https://github.com/LightningPeach/lnd-rust"
 edition = "2018"
 
 [dependencies]
-protobuf = "2.8"
-futures = "0.1"
-futures-cpupool = "0.1"
-httpbis = "0.7"
-grpc = "0.6"
-tls-api = "0.1"
-tls-api-native-tls = "0.1"
-bytes = "0.4"
+
+file = "*"
+rustc-serialize = "*"
+
+futures = "0.3.1"
+futures-cpupool = "0.1.*"
+
+protobuf = "2"
+#protobuf = { git = "https://github.com/stepancheg/rust-protobuf" }
+
+grpc = { git = "https://github.com/stepancheg/grpc-rust" }
+#grpc = "0.8.*"
+grpc-protobuf = { git = "https://github.com/stepancheg/grpc-rust" }
+#grpc-protobuf = "0.8.*"
+
+httpbis = { git = "https://github.com/stepancheg/rust-http2" }
+
+env_logger      = "~0.5"
+
+tls-api = "0.3.*"
+tls-api-native-tls = "0.3.*"
+
+bytes = "0.5.*"
+
 
 [build-dependencies]
-protoc-rust-grpc = "0.6"
+
+protoc-rust-grpc = { git = "https://github.com/stepancheg/grpc-rust" }
+#protoc-rust-grpc = "0.8.*"
