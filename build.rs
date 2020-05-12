@@ -1,15 +1,21 @@
 extern crate protoc_rust_grpc;
 
 fn main() {
-    println!("cargo:rerun-if-changed=protos/rpc.proto");
+    let apis = "work/grpc-gateway/third_party/googleapis";
+    let usr_inc = "/usr/include";
+    let local_inc = "/usr/local/include";
+    let lnd = "protos";
+    let source = "protos/rpc.proto";
+    let dest_dir = "protos";
 
-    let gopath = std::env::var("GOPATH").expect("GOPATH is not defined");
-    let gopath = std::path::Path::new(&gopath);
-    let google_api_path = gopath.join("src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis");
-    protoc_rust_grpc::run(protoc_rust_grpc::Args {
-        out_dir: "src",
-        includes: &["protos", google_api_path.to_str().unwrap()],
-        input: &["protos/rpc.proto"],
-        rust_protobuf: true, // also generate protobuf messages, not just services
-    }).expect("protoc-rust-grpc");
+    println!("cargo:rerun-if-changed={}", source);
+
+    // builder style
+    protoc_rust_grpc::Codegen::new()
+        .out_dir(dest_dir)
+        .includes(&[apis, usr_inc, local_inc, lnd])
+        .input(source)
+        .rust_protobuf(true)
+        .run()
+        .expect("protoc-rust-grpc")
 }
